@@ -270,12 +270,13 @@ build:dbg -c dbg
 # https://github.com/tensorflow/tensorflow/issues/48919.
 # Users can still include debug info for a specific kernel, e.g. with:
 #     --config=dbg --per_file_copt=+tensorflow/core/kernels/identity_op.*@-g
-build:dbg --per_file_copt=+.*,-tensorflow.*@-g0
-build:dbg --per_file_copt=+tensorflow/core/kernels.*@-g0
+#build:dbg --per_file_copt=+.*,-tensorflow.*@-g0
+#build:dbg --per_file_copt=+tensorflow/core/kernels.*@-g0
 # for now, disable arm_neon. see: https://github.com/tensorflow/tensorflow/issues/33360
 build:dbg --cxxopt -DTF_LITE_DISABLE_X86_NEON
 # AWS SDK must be compiled in release mode. see: https://github.com/tensorflow/tensorflow/issues/37498
 build:dbg --copt -DDEBUG_BUILD
+build:dbg --copt -ggdb3
 
 # Config to build TPU backend
 build:tpu --define=with_tpu_support=true
@@ -330,7 +331,8 @@ build:linux --copt="-Werror=unused-result"
 build:linux --copt="-Wswitch"
 build:linux --copt="-Werror=switch"
 # Required for building with clang
-build:linux --copt="-Wno-error=unused-but-set-variable"
+#build:linux --copt="-Wno-error=unused-but-set-variable"
+build:linux --copt -fno-omit-frame-pointer
 
 # On Windows, `__cplusplus` is wrongly defined without this switch
 # See https://devblogs.microsoft.com/cppblog/msvc-now-correctly-reports-__cplusplus/
@@ -455,6 +457,9 @@ test:rbe --test_env=USER=anon
 # Attempt to minimize the amount of data transfer between bazel and the remote
 # workers:
 build:rbe --remote_download_toplevel
+
+build:download_clang --action_env=CC=clang
+build:download_clang --action_env=CXX=clang++
 
 build:rbe_linux_base --config=rbe
 build:rbe_linux_base --action_env=PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin"
