@@ -2,6 +2,10 @@
 
 policy="numactl -N 1 -m 1"
 
+if [ "$1" == "clean" ]; then
+    bazel clean --expunge
+fi
+
 rm -f /tmp/tensorflow_pkg/*
 
 /usr/local/bin/bazel build --config=dbg \
