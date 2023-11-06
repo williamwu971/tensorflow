@@ -8,7 +8,25 @@ fi
 
 rm -f /tmp/tensorflow_pkg/*
 
-/usr/local/bin/bazel build --config=dbg //tensorflow/tools/pip_package:build_pip_package || exit
+# 1160 files in total
+kernel_files=$(ls -1 tensorflow/core/kernels | sed -n '1,300p')
+
+modified_array=()
+
+# Prefix and suffix to add
+prefix="--per_file_copt=+tensorflow/core/kernels/"
+suffix="@-g"
+
+# Loop through the array and add prefix and suffix to each element
+for elem in "${kernel_files[@]}"; do
+    modified_elem="${prefix}${elem}${suffix}"
+    modified_array+=("$modified_elem")
+done
+
+#echo $kernel_files
+#exit
+
+/usr/local/bin/bazel build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 
 #/usr/local/bin/bazel build --config=dbg \
 #    --per_file_copt=+tensorflow/compiler/xla/pjrt/transpose_kernels.*@-g3 \
