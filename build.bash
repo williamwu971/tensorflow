@@ -14,16 +14,16 @@ fi
 rm -f /tmp/tensorflow_pkg/*
 
 # 1160 files in total
-kernel_files=$(ls -1 tensorflow/core/kernels | sed -n '1,600p')
-kernel_files=$(ls -1 tensorflow/core/kernels | sed -n '601,1160p')
+read -d '' -ra kernel_files <<<"$(ls -1 tensorflow/core/kernels | sed -n '1,600p')"
+#read -d '' -ra kernel_files <<<"$(ls -1 tensorflow/core/kernels | sed -n '601,1160p')"
 modified_array=()
 prefix="--per_file_copt=+tensorflow/core/kernels/"
 suffix="@-g"
 
-read -d '' -ra kernel_files <<<"$(grep -ril pstore tensorflow/core/kernels/)"
-modified_array=()
-prefix="--per_file_copt=+"
-suffix="@-DNDEBUG,-march=native,-Og,-g3"
+#read -d '' -ra kernel_files <<<"$(grep -ril pstore tensorflow/core/kernels/)"
+#modified_array=()
+#prefix="--per_file_copt=+"
+#suffix="@-DNDEBUG,-march=native,-Og,-g3"
 
 for elem in "${kernel_files[@]}"; do
     modified_elem="${prefix}${elem}${suffix}"
@@ -33,7 +33,7 @@ done
 echo "${modified_array[@]}"
 
 IFS="$OLD_IFS"
-#exit
+exit
 
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
