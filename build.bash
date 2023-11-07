@@ -10,6 +10,7 @@ if [ "$1" == "clean" ]; then
     #rm -f /tmp/tensorflow_pkg/*
     #rm -rf /tmp/tmp.*
     rm -rf /tmp/*
+    mkdir /tmp/tensorflow_pkg
     $baz clean --expunge
     $baz clean
 fi
@@ -60,7 +61,6 @@ $baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:bu
 #    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-Og' --copt='-g3' \
 #    //tensorflow/tools/pip_package:build_pip_package || exit
 
-mkdir /tmp/tensorflow_pkg
 ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg || exit
 
 pip uninstall -y tensorflow || exit
