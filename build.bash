@@ -15,6 +15,8 @@ if [ "$1" == "clean" ]; then
     $baz clean
 fi
 
+#find tensorflow/core/kernels/ -maxdepth 1 -type f -exec basename {} \; | sed 's/\.[^.]*$//' | sort -u
+
 kernel_files=()
 
 # 1160 files in total
