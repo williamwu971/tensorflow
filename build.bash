@@ -38,7 +38,9 @@ for elem in "${kernel_files[@]}"; do
     modified_array+=("$modified_elem")
 done
 
-echo "${modified_array[@]}"
+for elem in "${modified_array[@]}"; do
+    echo "$elem"
+done
 while true; do
     read -p "Continue? (y/n) " yn
     case $yn in
