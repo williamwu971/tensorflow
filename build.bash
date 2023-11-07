@@ -24,7 +24,7 @@ read -d '' -ra kernel_files <<<"$(ls -1 tensorflow/core/kernels | sed -n '1,600p
 #read -d '' -ra kernel_files <<<"$(ls -1 tensorflow/core/kernels | sed -n '601,1160p')"
 modified_array=()
 prefix="--per_file_copt=+tensorflow/core/kernels/"
-suffix="@-g"
+suffix=".*@-g"
 
 #read -d '' -ra kernel_files <<<"$(grep -ril pstore tensorflow/core/kernels/)"
 #modified_array=()
