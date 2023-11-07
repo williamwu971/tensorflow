@@ -1,13 +1,15 @@
 # rebuild tensorflow
 
-policy="numactl -N 1 -m 1"
+OLD_IFS="$IFS"
+IFS=$'\n'
+
+#policy="numactl -N 1 -m 1"
 baz="/usr/local/bin/bazel"
 
 if [ "$1" == "clean" ]; then
-    $baz clean --expunge
+    #    $baz clean --expunge
+    $baz clean
 fi
-
-$baz clean
 
 rm -f /tmp/tensorflow_pkg/*
 
@@ -15,18 +17,11 @@ rm -f /tmp/tensorflow_pkg/*
 kernel_files=$(ls -1 tensorflow/core/kernels | sed -n '1,600p')
 kernel_files=$(ls -1 tensorflow/core/kernels | sed -n '601,1160p')
 modified_array=()
-
 prefix="--per_file_copt=+tensorflow/core/kernels/"
 suffix="@-g"
 
-for elem in "${kernel_files[@]}"; do
-    modified_elem="${prefix}${elem}${suffix}"
-    modified_array+=("$modified_elem")
-done
-
-kernel_files=$(grep -ril pstore tensorflow/core/kernels/)
+read -d '' -ra kernel_files <<<"$(grep -ril pstore tensorflow/core/kernels/)"
 modified_array=()
-
 prefix="--per_file_copt=+"
 suffix="@-DNDEBUG,-march=native,-Og,-g3"
 
@@ -35,7 +30,9 @@ for elem in "${kernel_files[@]}"; do
     modified_array+=("$modified_elem")
 done
 
-#echo "${modified_array[@]}"
+echo "${modified_array[@]}"
+
+IFS="$OLD_IFS"
 #exit
 
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
