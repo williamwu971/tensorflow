@@ -7,6 +7,8 @@ IFS=$'\n'
 baz="/usr/local/bin/bazel"
 
 rm -f /tmp/tensorflow_pkg/*
+rm -rf /tmp/tmp.*
+
 if [ "$1" == "clean" ]; then
     #    $baz clean --expunge
     $baz clean
