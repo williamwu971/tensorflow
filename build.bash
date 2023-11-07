@@ -35,7 +35,7 @@ for elem in "${kernel_files[@]}"; do
     modified_array+=("$modified_elem")
 done
 
-echo $kernel_files
+#echo "${modified_array[@]}"
 #exit
 
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
