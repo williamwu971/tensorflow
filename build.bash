@@ -31,7 +31,7 @@ for elem in "${kernel_files[@]}"; do
     modified_array+=("$modified_elem")
 done
 
-echo "${modified_array[@]}"
+#echo "${modified_array[@]}"
 
 IFS="$OLD_IFS"
 #exit
