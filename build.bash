@@ -13,14 +13,21 @@ rm -f /tmp/tensorflow_pkg/*
 # 1160 files in total
 kernel_files=$(ls -1 tensorflow/core/kernels | sed -n '1,600p')
 kernel_files=$(ls -1 tensorflow/core/kernels | sed -n '601,1160p')
-
 modified_array=()
 
-# Prefix and suffix to add
 prefix="--per_file_copt=+tensorflow/core/kernels/"
 suffix="@-g"
 
-# Loop through the array and add prefix and suffix to each element
+for elem in "${kernel_files[@]}"; do
+    modified_elem="${prefix}${elem}${suffix}"
+    modified_array+=("$modified_elem")
+done
+
+kernel_files=$(grep -ril pstore tensorflow/core/kernels/)
+modified_array=()
+
+prefix="--per_file_copt=+"
+
 for elem in "${kernel_files[@]}"; do
     modified_elem="${prefix}${elem}${suffix}"
     modified_array+=("$modified_elem")
@@ -37,7 +44,7 @@ done
 #    //tensorflow/tools/pip_package:build_pip_package || exit
 
 /usr/local/bin/bazel build \
-    --config=v1 --strip=never --copt='--DNDEBUG' --copt='-march=native' --copt='-0g' --copt='-g3' \
+    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-0g' --copt='-g3' \
     //tensorflow/tools/pip_package:build_pip_package || exit
 
 #/usr/local/bin/bazel build --config=dbg \
