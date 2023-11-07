@@ -33,7 +33,7 @@ done
 echo "${modified_array[@]}"
 
 IFS="$OLD_IFS"
-exit
+#exit
 
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
