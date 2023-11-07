@@ -26,14 +26,23 @@ suffix="@-g"
 #prefix="--per_file_copt=+"
 #suffix="@-DNDEBUG,-march=native,-Og,-g3"
 
+IFS="$OLD_IFS"
+
 for elem in "${kernel_files[@]}"; do
     modified_elem="${prefix}${elem}${suffix}"
     modified_array+=("$modified_elem")
 done
 
-#echo "${modified_array[@]}"
+echo "${modified_array[@]}"
+while true; do
+    read -p "Continue? (y/n) " yn
+    case $yn in
+    [Yy]*) break ;;    # If the user answers yes, exit the loop.
+    [Nn]*) exit ;;     # If the user answers no, exit the script.
+    *) echo "(y/n)" ;; # For any other input, ask again.
+    esac
+done
 
-IFS="$OLD_IFS"
 #exit
 
 $baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
