@@ -12,6 +12,7 @@ if [ "$1" == "clean" ]; then
 fi
 
 rm -f /tmp/tensorflow_pkg/*
+kernel_files=()
 
 # 1160 files in total
 read -d '' -ra kernel_files <<<"$(ls -1 tensorflow/core/kernels | sed -n '1,600p')"
