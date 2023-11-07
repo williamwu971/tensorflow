@@ -6,8 +6,9 @@ IFS=$'\n'
 #policy="numactl -N 1 -m 1"
 baz="/usr/local/bin/bazel"
 
-rm -f /tmp/tensorflow_pkg/*
-rm -rf /tmp/tmp.*
+#rm -f /tmp/tensorflow_pkg/*
+#rm -rf /tmp/tmp.*
+rm -rf /tmp/*
 
 if [ "$1" == "clean" ]; then
     $baz clean --expunge
@@ -58,6 +59,7 @@ $baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:bu
 #    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-Og' --copt='-g3' \
 #    //tensorflow/tools/pip_package:build_pip_package || exit
 
+mkdir /tmp/tensorflow_pkg
 ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg || exit
 
 pip uninstall -y tensorflow || exit
