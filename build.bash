@@ -28,6 +28,7 @@ kernel_files=$(grep -ril pstore tensorflow/core/kernels/)
 modified_array=()
 
 prefix="--per_file_copt=+"
+suffix="@-DNDEBUG,-march=native,-Og,-g3"
 
 for elem in "${kernel_files[@]}"; do
     modified_elem="${prefix}${elem}${suffix}"
@@ -39,14 +40,15 @@ echo $kernel_files
 
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
+$baz build --config=v1 "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 
 #$baz build \
 #    --cxxopt='-g' --cxxopt='-Og' --copt='-Og' --config=dbg \
 #    //tensorflow/tools/pip_package:build_pip_package || exit
 
-$baz build \
-    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-Og' --copt='-g3' \
-    //tensorflow/tools/pip_package:build_pip_package || exit
+#$baz build \
+#    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-Og' --copt='-g3' \
+#    //tensorflow/tools/pip_package:build_pip_package || exit
 
 #$baz build --config=dbg \
 #    --per_file_copt=+tensorflow/compiler/xla/pjrt/transpose_kernels.*@-g3 \
