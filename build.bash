@@ -44,7 +44,7 @@ done
 #    //tensorflow/tools/pip_package:build_pip_package || exit
 
 /usr/local/bin/bazel build \
-    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-0g' --copt='-g3' \
+    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-Og' --copt='-g3' \
     //tensorflow/tools/pip_package:build_pip_package || exit
 
 #/usr/local/bin/bazel build --config=dbg \
