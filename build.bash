@@ -6,11 +6,10 @@ IFS=$'\n'
 #policy="numactl -N 1 -m 1"
 baz="/usr/local/bin/bazel"
 
-#rm -f /tmp/tensorflow_pkg/*
-#rm -rf /tmp/tmp.*
-rm -rf /tmp/*
-
 if [ "$1" == "clean" ]; then
+    #rm -f /tmp/tensorflow_pkg/*
+    #rm -rf /tmp/tmp.*
+    rm -rf /tmp/*
     $baz clean --expunge
     $baz clean
 fi
