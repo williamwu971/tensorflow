@@ -1,12 +1,13 @@
 # rebuild tensorflow
 
 policy="numactl -N 1 -m 1"
+baz="/usr/local/bin/bazel"
 
 if [ "$1" == "clean" ]; then
-    bazel clean --expunge
+    $baz clean --expunge
 fi
 
-bazel clean
+$baz clean
 
 rm -f /tmp/tensorflow_pkg/*
 
@@ -33,21 +34,21 @@ for elem in "${kernel_files[@]}"; do
     modified_array+=("$modified_elem")
 done
 
-#echo $kernel_files
+echo $kernel_files
 #exit
 
-#/usr/local/bin/bazel build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
-#/usr/local/bin/bazel build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
+#$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
+#$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 
-#/usr/local/bin/bazel build \
+#$baz build \
 #    --cxxopt='-g' --cxxopt='-Og' --copt='-Og' --config=dbg \
 #    //tensorflow/tools/pip_package:build_pip_package || exit
 
-/usr/local/bin/bazel build \
+$baz build \
     --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-Og' --copt='-g3' \
     //tensorflow/tools/pip_package:build_pip_package || exit
 
-#/usr/local/bin/bazel build --config=dbg \
+#$baz build --config=dbg \
 #    --per_file_copt=+tensorflow/compiler/xla/pjrt/transpose_kernels.*@-g3 \
 #    --per_file_copt=+tensorflow/lite/delegates/gpu/gl_delegate.*@-g3 \
 #    --per_file_copt=+tensorflow/lite/delegates/gpu/delegate.*@-g3 \
