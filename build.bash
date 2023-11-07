@@ -35,9 +35,8 @@ echo "${modified_array[@]}"
 IFS="$OLD_IFS"
 #exit
 
-#$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
-#$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
-$baz build --config=v1 "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
+$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
+#$baz build --config=v1 "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 
 #$baz build \
 #    --cxxopt='-g' --cxxopt='-Og' --copt='-Og' --config=dbg \
