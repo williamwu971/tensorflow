@@ -6,6 +6,8 @@ if [ "$1" == "clean" ]; then
     bazel clean --expunge
 fi
 
+bazel clean
+
 rm -f /tmp/tensorflow_pkg/*
 
 # 1160 files in total
@@ -30,9 +32,9 @@ done
 #/usr/local/bin/bazel build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 #/usr/local/bin/bazel build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 
-/usr/local/bin/bazel build \
-    --cxxopt='-g' --cxxopt='-Og' --copt='-Og' --config=dbg \
-    //tensorflow/tools/pip_package:build_pip_package || exit
+#/usr/local/bin/bazel build \
+#    --cxxopt='-g' --cxxopt='-Og' --copt='-Og' --config=dbg \
+#    //tensorflow/tools/pip_package:build_pip_package || exit
 
 /usr/local/bin/bazel build \
     --config=v1 --strip=never --copt='--DNDEBUG' --copt='-march=native' --copt='-0g' --copt='-g3' \
