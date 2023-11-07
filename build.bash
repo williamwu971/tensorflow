@@ -6,12 +6,12 @@ IFS=$'\n'
 #policy="numactl -N 1 -m 1"
 baz="/usr/local/bin/bazel"
 
+rm -f /tmp/tensorflow_pkg/*
 if [ "$1" == "clean" ]; then
     #    $baz clean --expunge
     $baz clean
 fi
 
-rm -f /tmp/tensorflow_pkg/*
 kernel_files=()
 
 # 1160 files in total
