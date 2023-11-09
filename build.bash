@@ -7,13 +7,16 @@ IFS=$'\n'
 baz="/usr/local/bin/bazel"
 
 if [ "$1" == "clean" ]; then
-    #rm -f /tmp/tensorflow_pkg/*
     #rm -rf /tmp/tmp.*
     rm -rf /tmp/*
     mkdir /tmp/tensorflow_pkg
     $baz clean --expunge
     $baz clean
 fi
+
+# these two are kept intentionally
+rm -f /tmp/tensorflow_pkg/*
+pip uninstall -y tensorflow || exit
 
 #find tensorflow/core/kernels/ -maxdepth 1 -type f -exec basename {} \; | sed 's/\.[^.]*$//' | sort -u
 
@@ -65,7 +68,6 @@ $baz build --config=dbg //tensorflow/tools/pip_package:build_pip_package || exit
 
 ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg || exit
 
-pip uninstall -y tensorflow || exit
 #pip install /tmp/tensorflow_pkg/tensorflow-2.13.1-cp38-cp38-linux_x86_64.whl || exit
 pip install /tmp/tensorflow_pkg/* || exit
 
