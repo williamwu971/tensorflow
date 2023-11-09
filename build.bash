@@ -15,6 +15,8 @@ if [ "$1" == "clean" ]; then
 fi
 
 # these two are kept intentionally
+# to make sure that the benchmark fails immediately
+# if compilation fails
 rm -f /tmp/tensorflow_pkg/*
 pip uninstall -y tensorflow || exit
 
