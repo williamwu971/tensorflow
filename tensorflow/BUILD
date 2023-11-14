@@ -1133,6 +1133,7 @@ cc_library(
 # depend on libtensorflow_framework.so unless they opt in.
 tf_cc_shared_library(
     name = "tensorflow_framework",
+    copts = ["-g","-O0"],
     additional_linker_inputs = [
         "//tensorflow:tf_framework_version_script.lds",
         "//tensorflow:tf_private_symbols.lds",
@@ -1271,6 +1272,7 @@ tf_cc_shared_object(
 
 tf_cc_shared_library(
     name = "tensorflow_cc",
+    copts = ["-g","-O0"],
     additional_linker_inputs = [
         "//tensorflow:tf_exported_symbols.lds",
         "//tensorflow:tf_private_symbols.lds",
