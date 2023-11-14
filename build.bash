@@ -56,7 +56,8 @@ IFS="$OLD_IFS"
 
 #exit
 
-$baz build --config=dbg //tensorflow/tools/pip_package:build_pip_package || exit
+$baz build //tensorflow/tools/pip_package:build_pip_package || exit
+#$baz build --config=dbg //tensorflow/tools/pip_package:build_pip_package || exit
 #$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 #$baz build --config=v1 "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
 
