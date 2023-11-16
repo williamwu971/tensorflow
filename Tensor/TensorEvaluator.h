@@ -125,7 +125,27 @@ struct TensorEvaluator
   template <int StoreMode> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   void writePacket(Index index, const PacketReturnType& x) const
   {
-    return internal::pstoret<Scalar, PacketReturnType, StoreMode>(m_data + index, x);
+    internal::pstoret<Scalar, PacketReturnType, StoreMode>(m_data + index, x);
+
+
+    uint64_t gran=256;
+    volatile char* ptr = (char*)(m_data + index);
+    ptr+=4;
+
+    if (((uint64_t)ptr)%gran==0){
+      ptr-=gran;
+
+//      printf("flush writePacket\n");
+
+      for (uint64_t i=0; i<gran; i += 64){
+                asm volatile ("clwb (%0)"::"r"((volatile char *) (ptr)));
+//        (volatile char *) (ptr);
+        ptr+=64;
+      }
+
+    }
+
+    return;
   }
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE CoeffReturnType coeff(const array<DenseIndex, NumCoords>& coords) const {
