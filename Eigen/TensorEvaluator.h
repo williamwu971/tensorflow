@@ -70,7 +70,10 @@ struct TensorEvaluator
       : m_data(device.get((const_cast<TensorPointerType>(m.data())))),
         m_dims(m.dimensions()),
         m_device(device)
-  { }
+  {
+
+    printf("m_data %p size %llu\n",m_data,m_dims.TotalSize() * sizeof(Scalar));
+  }
 
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const Dimensions& dimensions() const { return m_dims; }
