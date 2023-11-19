@@ -290,6 +290,14 @@ struct EvalRange<Evaluator, StorageIndex, /*Vectorizable*/ true> {
     Evaluator evaluator = *evaluator_in;
     eigen_assert(lastIdx >= firstIdx);
     StorageIndex i = firstIdx;
+
+//    printf("idx %d %d %d\n",firstIdx,lastIdx,)
+
+//    const Dimensions& dim =evaluator.dimensions();
+
+//        if (lastIdx - firstIdx >2*1024)
+//      printf("evaluator pointer %p size:%ld\n",evaluator.data(),(lastIdx - firstIdx)*4);
+
     if (lastIdx - firstIdx >= PacketSize) {
       eigen_assert(firstIdx % PacketSize == 0);
       StorageIndex last_chunk_offset = lastIdx - 4 * PacketSize;
@@ -334,7 +342,14 @@ class TensorExecutor<Expression, ThreadPoolDevice, Vectorizable, Tiling> {
     Evaluator evaluator(expr, device);
     const bool needs_assign = evaluator.evalSubExprsIfNeeded(nullptr);
     if (needs_assign) {
+
       const StorageIndex size = array_prod(evaluator.dimensions());
+
+      if (size >2*1024)
+        printf("evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
+
+
+
       device.parallelFor(size, evaluator.costPerCoeff(Vectorizable),
                          EvalRange::alignBlockSize,
                          [&evaluator](StorageIndex firstIdx, StorageIndex lastIdx) {

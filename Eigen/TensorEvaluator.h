@@ -72,8 +72,15 @@ struct TensorEvaluator
         m_device(device)
   {
 
-    printf("m_data %p size %zu\n",m_data,m_dims.TotalSize() * sizeof(Scalar));
+//    size_t data_size = m_dims.TotalSize() * sizeof(Scalar);
+//
+//    if (data_size>(2*1024*1024))
+//      printf("m_data %p size %zu\n",m_data,data_size);
   }
+
+//  uint64_t get_mdata_size(){
+//    return (uint64_t)((uint64_t)(m_dims.TotalSize()) * (uint64_t)sizeof(Scalar));
+//  }
 
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const Dimensions& dimensions() const { return m_dims; }
@@ -291,6 +298,10 @@ struct TensorEvaluator<const Derived, Device>
   TensorEvaluator(const Derived& m, const Device& device)
       : m_data(device.get(m.data())), m_dims(m.dimensions()), m_device(device)
   { }
+
+//  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE uint64_t get_mdata_size(){
+//    return (uint64_t)((uint64_t)(m_dims.TotalSize()) * (uint64_t)sizeof(Scalar));
+//  }
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const Dimensions& dimensions() const { return m_dims; }
 

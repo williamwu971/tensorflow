@@ -179,6 +179,12 @@ struct TensorEvaluator<const TensorAssignOp<LeftArgType, RightArgType>, Device>
     const int RhsLoadMode = TensorEvaluator<RightArgType, Device>::IsAligned ? Aligned : Unaligned;
     m_leftImpl.template writePacket<LhsStoreMode>(i, m_rightImpl.template packet<RhsLoadMode>(i));
   }
+
+//  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE uint64_t get_left_size(){
+//    return m_leftImpl.get_mdata_size();
+//  }
+
+
   EIGEN_DEVICE_FUNC CoeffReturnType coeff(Index index) const
   {
     return m_leftImpl.coeff(index);
