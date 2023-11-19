@@ -136,9 +136,12 @@ struct TensorEvaluator
   void writePacket(Index index, const PacketReturnType& x) const
   {
 
-//    internal::pstoret<Scalar, PacketReturnType, StoreMode>(m_data + index, x);
+    internal::pstoret<Scalar, PacketReturnType, StoreMode>(m_data + index, x);
 
-          ((float*)(m_data + index))[0] += 3.1415926;
+//          ((float*)(m_data + index))[0] += 3.14;
+//          ((float*)(m_data + index))[1] += 3.141;
+//          ((float*)(m_data + index))[2] += 3.1415;
+//          ((float*)(m_data + index))[3] += 3.14159;
 
 //    memcpy(m_data + index, x,4);
 //    const float* xp=reinterpret_cast<const float*>(&x);
