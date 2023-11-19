@@ -72,7 +72,7 @@ struct TensorEvaluator
         m_device(device)
   {
 
-    printf("m_data %p size %llu\n",m_data,m_dims.TotalSize() * sizeof(Scalar));
+    printf("m_data %p size %zu\n",m_data,m_dims.TotalSize() * sizeof(Scalar));
   }
 
 
