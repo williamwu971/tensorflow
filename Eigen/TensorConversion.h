@@ -268,21 +268,21 @@ struct PacketConv {
 
 //    printf("value array size %d \n",sizeof(values));
 
-    uint64_t gran=64;
-    volatile char* ptr = ((char*)(&values[0]))+sizeof(values);
-
-    if (((uint64_t)ptr)%gran==0){
-      ptr-=gran;
+//    uint64_t gran=64;
+//    volatile char* ptr = ((char*)(&values[0]))+sizeof(values);
+//
+//    if (((uint64_t)ptr)%gran==0){
+//      ptr-=gran;
 
 //      printf("flush\n");
 
-      for (uint64_t i=0; i<gran; i += 64){
+//      for (uint64_t i=0; i<gran; i += 64){
 //        asm volatile ("clwb (%0)"::"r"((volatile char *) (ptr)));
-        (volatile char *) (ptr);
-        ptr+=64;
-      }
+//        (volatile char *) (ptr);
+//        ptr+=64;
+//      }
 
-    }
+//    }
 
 
     TargetPacket rslt = internal::pload<TargetPacket>(values);

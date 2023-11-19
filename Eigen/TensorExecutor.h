@@ -280,6 +280,8 @@ struct EvalRange {
   static StorageIndex alignBlockSize(StorageIndex size) { return size; }
 };
 
+static int enable_flush=-1;
+
 template <typename Evaluator, typename StorageIndex>
 struct EvalRange<Evaluator, StorageIndex, /*Vectorizable*/ true> {
   static constexpr int PacketSize =
@@ -307,6 +309,24 @@ struct EvalRange<Evaluator, StorageIndex, /*Vectorizable*/ true> {
       for (; i <= last_chunk_offset; i += 4 * PacketSize) {
         for (StorageIndex j = 0; j < 4; j++) {
           evaluator.evalPacket(i + j * PacketSize);
+        }
+
+        if (enable_flush){
+          StorageIndex distance = i-firstIdx;
+          if (distance>0 && distance%256==0){
+
+            volatile char* data = (volatile char*)evaluator.data();
+            data+=(i*4);
+            data = (volatile char *)((unsigned long) data & ~(63));
+
+            volatile char * ptr = data;
+            ptr-=1024;
+
+            for (; ptr < data; ptr += (64)) {
+              asm volatile ("clwb (%0)"::"r"((volatile char *) (ptr)));
+            }
+          }
+
         }
       }
       last_chunk_offset = lastIdx - PacketSize;
@@ -345,10 +365,34 @@ class TensorExecutor<Expression, ThreadPoolDevice, Vectorizable, Tiling> {
 
       const StorageIndex size = array_prod(evaluator.dimensions());
 
-      if (size >2*1024)
-        printf("evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
+//      if (size*4 >=3221225472)
+//        printf("evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
+
+//      static char* prev_ptr = NULL;
+      enable_flush=0;
 
 
+
+        if (size*4>=1073741824){
+
+//        printf("evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
+
+          if (getenv("enable_flush")!=NULL){
+
+//            if (prev_ptr==(char*)evaluator.data()){
+            enable_flush=1;
+            printf("flush evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
+//            }else{
+//              printf("inequal pointer\n");
+//            }
+        }
+//          else{
+//            printf("flush disabled\n");
+//        }
+
+      }
+
+//      prev_ptr=(char*)evaluator.data();
 
       device.parallelFor(size, evaluator.costPerCoeff(Vectorizable),
                          EvalRange::alignBlockSize,
