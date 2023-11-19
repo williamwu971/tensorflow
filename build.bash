@@ -1,78 +1,33 @@
+#!/usr/bin/env bash
 # rebuild tensorflow
 
-OLD_IFS="$IFS"
-IFS=$'\n'
-
-#policy="numactl -N 1 -m 1"
 baz="/usr/local/bin/bazel"
 
 if [ "$1" == "clean" ]; then
-    #rm -rf /tmp/tmp.*
-    sudo rm -rf /tmp/* /root/.debug
-    mkdir /tmp/tensorflow_pkg
-    $baz clean --expunge
-    $baz clean
+
+  while true; do
+    read -p "Clean? (y/n) " yn
+    case $yn in
+    [Yy]*) break ;;    # If the user answers yes, exit the loop.
+    [Nn]*) exit ;;     # If the user answers no, exit the script.
+    *) echo "(y/n)" ;; # For any other input, ask again.
+    esac
+  done
+
+  #rm -rf /tmp/tmp.*
+  sudo rm -rf /tmp/* /root/.debug
+  mkdir /tmp/tensorflow_pkg
+  $baz clean --expunge
+  $baz clean
 fi
 
-# these two are kept intentionally
-# to make sure that the benchmark fails immediately
-# if compilation fails
 rm -f /tmp/tensorflow_pkg/*
 pip uninstall -y tensorflow || exit
 
-#find tensorflow/core/kernels/ -maxdepth 1 -type f -exec basename {} \; | sed 's/\.[^.]*$//' | sort -u
-
-#kernel_files=()
-#modified_array=()
-
-# 1160 files in total
-#read -d '' -ra kernel_files <<<"$(ls -1 tensorflow/core/kernels | sed -n '1,600p')"
-#read -d '' -ra kernel_files <<<"$(ls -1 tensorflow/core/kernels | sed -n '601,1160p')"
-#prefix="--per_file_copt=+tensorflow/core/kernels/"
-#suffix=".*@-g"
-
-#read -d '' -ra kernel_files <<<"$(grep -ril pstore tensorflow/core/kernels/)"
-#prefix="--per_file_copt=+"
-#suffix="@-DNDEBUG,-march=native,-Og,-g3"
-
-IFS="$OLD_IFS"
-
-#for elem in "${kernel_files[@]}"; do
-#    modified_elem="${prefix}${elem}${suffix}"
-#    modified_array+=("$modified_elem")
-#done
-#
-#for elem in "${modified_array[@]}"; do
-#    echo "$elem"
-#done
-#while true; do
-#    read -p "Continue? (y/n) " yn
-#    case $yn in
-#    [Yy]*) break ;;    # If the user answers yes, exit the loop.
-#    [Nn]*) exit ;;     # If the user answers no, exit the script.
-#    *) echo "(y/n)" ;; # For any other input, ask again.
-#    esac
-#done
-
-#exit
-
-#$baz build //tensorflow/tools/pip_package:build_pip_package || exit
-#$baz build --config=dbg //tensorflow/tools/pip_package:build_pip_package || exit
-$baz build  --config=dbg --linkopt="-fuse-ld=mold" //tensorflow/tools/pip_package:build_pip_package || exit
-#$baz build --config=dbg "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
-#$baz build --config=v1 "${modified_array[@]}" //tensorflow/tools/pip_package:build_pip_package || exit
-
-#$baz build \
-#    --cxxopt='-g' --cxxopt='-Og' --copt='-Og' --config=dbg \
-#    //tensorflow/tools/pip_package:build_pip_package || exit
-
-#$baz build \
-#    --config=v1 --strip=never --copt='-DNDEBUG' --copt='-march=native' --copt='-Og' --copt='-g3' \
-#    //tensorflow/tools/pip_package:build_pip_package || exit
+$baz build --config=dbg //tensorflow/tools/pip_package:build_pip_package || exit
 
 ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg || exit
 
-#pip install /tmp/tensorflow_pkg/tensorflow-2.13.1-cp38-cp38-linux_x86_64.whl || exit
 pip install /tmp/tensorflow_pkg/* || exit
 
 pkill -f bazel # terminate bazel server
