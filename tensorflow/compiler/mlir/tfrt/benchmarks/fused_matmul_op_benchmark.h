@@ -183,6 +183,8 @@ void RunFusedMatMulEigenBenchmark(::testing::benchmark::State& state) {
       std::function<void(const ContractionOutputMapper<T, Eigen::Index>&,
                          const Eigen::TensorContractionParams&, Eigen::Index,
                          Eigen::Index, Eigen::Index, Eigen::Index)>;
+
+  printf("\t<<<\tRunFusedMatMulEigenBenchmark\t>>>\n");
   for (auto _ : state) {
     OutputKernelFn kernel;
     switch (activation) {

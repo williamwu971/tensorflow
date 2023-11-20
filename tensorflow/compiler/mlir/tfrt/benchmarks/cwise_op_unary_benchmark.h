@@ -206,6 +206,7 @@ void RunUnaryEigenBenchmark(::testing::benchmark::State& state,
   Eigen::Tensor<T, rank, Eigen::RowMajor> dst(dsizes);
   dst.setZero();
 
+  printf("\t<<<\tRunUnaryEigenBenchmark\t>>>\n");
   for (auto _ : state) {
     auto expr = expr_builder(input);
 

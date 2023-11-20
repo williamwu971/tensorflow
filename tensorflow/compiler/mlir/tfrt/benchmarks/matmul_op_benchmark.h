@@ -182,6 +182,7 @@ void RunMatMulEigenBenchmark(::testing::benchmark::State& state) {
   Eigen::array<Eigen::IndexPair<Eigen::DenseIndex>, 1> contract_pairs;
   contract_pairs[0] = Eigen::IndexPair<Eigen::DenseIndex>(1, 0);
 
+  printf("\t<<<\tRunMatMulEigenBenchmark\t>>>\n");
   for (auto _ : state) {
     auto expr = lhs.contract(rhs, contract_pairs);
 
