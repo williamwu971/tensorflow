@@ -830,71 +830,71 @@ ploadquad<Packet16b>(const bool* from) {
 
 template<> EIGEN_STRONG_INLINE void pstore<float>(float*   to, const Packet4f& from) {
 
-  (void)from;
-  for (int i=0;i<4;i++)to[i]+=1;
-//  EIGEN_DEBUG_ALIGNED_STORE _mm_store_ps(to, from);
+//  (void)from;
+//  for (int i=0;i<4;i++)to[i]+=1;
+  EIGEN_DEBUG_ALIGNED_STORE _mm_store_ps(to, from);
 }
 template<> EIGEN_STRONG_INLINE void pstore<double>(double* to, const Packet2d& from) {
-  (void)from;
-  for (int i=0;i<2;i++)to[i]+=1;
-//  EIGEN_DEBUG_ALIGNED_STORE _mm_store_pd(to, from);
+//  (void)from;
+//  for (int i=0;i<2;i++)to[i]+=1;
+  EIGEN_DEBUG_ALIGNED_STORE _mm_store_pd(to, from);
 }
 template<> EIGEN_STRONG_INLINE void pstore<int>(int*       to, const Packet4i& from) {
-  (void)from;
-  for (int i=0;i<4;i++)to[i]+=1;
-//  EIGEN_DEBUG_ALIGNED_STORE _mm_store_si128(reinterpret_cast<__m128i*>(to), from);
+//  (void)from;
+  //for (int i=0;i<4;i++)to[i]+=1;
+  EIGEN_DEBUG_ALIGNED_STORE _mm_store_si128(reinterpret_cast<__m128i*>(to), from);
 }
 template<> EIGEN_STRONG_INLINE void pstore<bool>(bool*     to, const Packet16b& from) {
-  int8_t* ptr =reinterpret_cast<float*>(to);
-  (void)from;
-  for (int i=0;i<16;i++)ptr[i]+=1;
-//  EIGEN_DEBUG_ALIGNED_STORE _mm_store_si128(reinterpret_cast<__m128i*>(to), from);
+//  int8_t* ptr =reinterpret_cast<int8_t*>(to);
+//  (void)from;
+//  for (int i=0;i<16;i++)ptr[i]+=1;
+  EIGEN_DEBUG_ALIGNED_STORE _mm_store_si128(reinterpret_cast<__m128i*>(to), from);
 }
 
 template<> EIGEN_STRONG_INLINE void pstoreu<double>(double* to, const Packet2d& from) {
-  (void)from;
-  for (int i=0;i<2;i++)to[i]+=1;
-//  EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_pd(to, from);
+//  (void)from;
+//  for (int i=0;i<2;i++)to[i]+=1;
+  EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_pd(to, from);
 }
 template<> EIGEN_STRONG_INLINE void pstoreu<float>(float*   to, const Packet4f& from) {
-  (void)from;
-  for (int i=0;i<4;i++)to[i]+=1;
-//  EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_ps(to, from);
+//  (void)from;
+// for (int i=0;i<4;i++)to[i]+=1;
+  EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_ps(to, from);
 }
 template<> EIGEN_STRONG_INLINE void pstoreu<int>(int*       to, const Packet4i& from) {
-  (void)from;
-  for (int i=0;i<4;i++)to[i]+=1;
-//  EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_si128(reinterpret_cast<__m128i*>(to), from);
+//  (void)from;
+//  for (int i=0;i<4;i++)to[i]+=1;
+  EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_si128(reinterpret_cast<__m128i*>(to), from);
 }
 template<> EIGEN_STRONG_INLINE void pstoreu<bool>(bool*     to, const Packet16b& from) {
-  int8_t* ptr =reinterpret_cast<float*>(to);
-  (void)from;
-  for (int i=0;i<16;i++)to[i]+=1;
-//  EIGEN_DEBUG_ALIGNED_STORE _mm_storeu_si128(reinterpret_cast<__m128i*>(to), from);
+//  int8_t* ptr =reinterpret_cast<int8_t*>(to);
+//  (void)from;
+//  for (int i=0;i<16;i++)to[i]+=1;
+  EIGEN_DEBUG_ALIGNED_STORE _mm_storeu_si128(reinterpret_cast<__m128i*>(to), from);
 }
 
 template<typename Scalar, typename Packet> EIGEN_STRONG_INLINE void pstorel(Scalar* to, const Packet& from);
 template<> EIGEN_STRONG_INLINE void pstorel(float*   to, const Packet4f& from) {
-  (void)from;
-  for (int i=0;i<4;i++)to[i]+=1;
-//  EIGEN_DEBUG_UNALIGNED_STORE _mm_storel_pi(reinterpret_cast<__m64*>(to), from);
+//  (void)from;
+//  for (int i=0;i<4;i++)to[i]+=1;
+  EIGEN_DEBUG_UNALIGNED_STORE _mm_storel_pi(reinterpret_cast<__m64*>(to), from);
 }
 template<> EIGEN_STRONG_INLINE void pstorel(double*  to, const Packet2d& from) {
-  (void)from;
-  for (int i=0;i<2;i++)to[i]+=1;
-//  EIGEN_DEBUG_UNALIGNED_STORE _mm_storel_pd(to, from);
+//  (void)from;
+//  for (int i=0;i<2;i++)to[i]+=1;
+  EIGEN_DEBUG_UNALIGNED_STORE _mm_storel_pd(to, from);
 }
 
 template<typename Scalar, typename Packet> EIGEN_STRONG_INLINE void pstores(Scalar* to, const Packet& from);
 template<> EIGEN_STRONG_INLINE void pstores(float*   to, const Packet4f& from) {
-  (void)from;
-  for (int i=0;i<4;i++)to[i]+=1;
-//  EIGEN_DEBUG_UNALIGNED_STORE _mm_store_ss(to, from);
+//  (void)from;
+//  for (int i=0;i<4;i++)to[i]+=1;
+  EIGEN_DEBUG_UNALIGNED_STORE _mm_store_ss(to, from);
 }
 template<> EIGEN_STRONG_INLINE void pstores(double*  to, const Packet2d& from) {
-  (void)from;
-  for (int i=0;i<2;i++)to[i]+=1;
-//  EIGEN_DEBUG_UNALIGNED_STORE _mm_store_sd(to, from);
+//  (void)from;
+//  for (int i=0;i<2;i++)to[i]+=1;
+  EIGEN_DEBUG_UNALIGNED_STORE _mm_store_sd(to, from);
 }
 
 template<> EIGEN_DEVICE_FUNC inline Packet4f pgather<float, Packet4f>(const float* from, Index stride)
@@ -950,20 +950,20 @@ template<> EIGEN_DEVICE_FUNC inline void pscatter<bool, Packet16b>(bool* to, con
 template<> EIGEN_STRONG_INLINE void pstore1<Packet4f>(float* to, const float& a)
 {
 
-  (void)a;
-  for (int i=0;i<4;i++)to[i]+=1;
+//  (void)a;
+//  for (int i=0;i<4;i++)to[i]+=1;
 
-//  Packet4f pa = _mm_set_ss(a);
-//  pstore(to, Packet4f(vec4f_swizzle1(pa,0,0,0,0)));
+  Packet4f pa = _mm_set_ss(a);
+  pstore(to, Packet4f(vec4f_swizzle1(pa,0,0,0,0)));
 }
 // some compilers might be tempted to perform multiple moves instead of using a vector path.
 template<> EIGEN_STRONG_INLINE void pstore1<Packet2d>(double* to, const double& a)
 {
-  (void)from;
-  for (int i=0;i<2;i++)to[i]+=1;
+//  (void)a;
+//  for (int i=0;i<2;i++)to[i]+=1;
 
-//  Packet2d pa = _mm_set_sd(a);
-//  pstore(to, Packet2d(vec2d_swizzle1(pa,0,0)));
+  Packet2d pa = _mm_set_sd(a);
+  pstore(to, Packet2d(vec2d_swizzle1(pa,0,0)));
 }
 
 #if EIGEN_COMP_PGI && EIGEN_COMP_PGI < 1900
