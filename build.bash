@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # rebuild tensorflow
 
-for i in $(seq 40 79); do
-    echo 1 >/sys/devices/system/cpu/cpu"$i"/online
-done
+sudo bash /mnt/sdb/xiaoxiang/cache/os/labos.sp.sh 1
 
 baz="/usr/local/bin/bazel"
 
@@ -37,6 +35,4 @@ pip install /tmp/tensorflow_pkg/* || exit
 # terminate bazel server
 #pkill -f bazel
 
-for i in $(seq 40 79); do
-    echo 0 >/sys/devices/system/cpu/cpu"$i"/online
-done
+sudo bash /mnt/sdb/xiaoxiang/cache/os/labos.sp.sh 0
