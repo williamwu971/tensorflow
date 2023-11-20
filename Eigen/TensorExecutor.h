@@ -280,7 +280,7 @@ struct EvalRange {
   static StorageIndex alignBlockSize(StorageIndex size) { return size; }
 };
 
-static int enable_flush=-1;
+//static int enable_flush=-1;
 
 template <typename Evaluator, typename StorageIndex>
 struct EvalRange<Evaluator, StorageIndex, /*Vectorizable*/ true> {
@@ -299,7 +299,8 @@ struct EvalRange<Evaluator, StorageIndex, /*Vectorizable*/ true> {
 
 //        if (lastIdx - firstIdx >2*1024)
 //      printf("evaluator pointer %p size:%ld\n",evaluator.data(),(lastIdx - firstIdx)*4);
-    int flush_print= (i==0);
+//    int flush_print= (i==0);
+//    int local_enable_flush = enable_flush;
 
     if (lastIdx - firstIdx >= PacketSize) {
       eigen_assert(firstIdx % PacketSize == 0);
@@ -312,32 +313,32 @@ struct EvalRange<Evaluator, StorageIndex, /*Vectorizable*/ true> {
           evaluator.evalPacket(i + j * PacketSize);
         }
 
-        if (enable_flush){
-          StorageIndex distance = i-firstIdx;
-          if (distance>0 && distance%256==0){
-
-            volatile char* data = (volatile char*)evaluator.data();
-            data+=(i*4);
-            data = (volatile char *)((unsigned long) data & ~(63));
-
-            volatile char * ptr = data;
-            ptr-=1024;
-
-            if (flush_print){
-
-              printf("first %ld last %ld i %d Packetsize %ld\n",firstIdx,lastIdx,i,PacketSize);
-              printf("flushing %p to %p\n",ptr,data);
-
-
-            }
-
-
-            for (; ptr < data; ptr += (64)) {
-              asm volatile ("clwb (%0)"::"r"((volatile char *) (ptr)));
-            }
-          }
-
-        }
+//        if (local_enable_flush){
+//          StorageIndex distance = i-firstIdx;
+//          if (distance>0 && distance%256==0){
+//
+//            volatile char* data = (volatile char*)evaluator.data();
+//            data+=(i*sizeof(float));
+//            data = (volatile char *)((unsigned long) data & ~(63));
+//
+//            volatile char * ptr = data;
+//            ptr-=1024;
+//
+////            if (flush_print){
+////
+////              printf("first %ld last %ld i %d Packetsize %ld\n",firstIdx,lastIdx,i,PacketSize);
+////              printf("flushing %p to %p\n",ptr,data);
+////
+////
+////            }
+//
+//
+//            for (; ptr < data; ptr += (64)) {
+//              asm volatile ("clwb (%0)"::"r"((volatile char *) (ptr)));
+//            }
+//          }
+//
+//        }
       }
       last_chunk_offset = lastIdx - PacketSize;
       for (; i <= last_chunk_offset; i += PacketSize) {
@@ -379,30 +380,41 @@ class TensorExecutor<Expression, ThreadPoolDevice, Vectorizable, Tiling> {
 //        printf("evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
 
 //      static char* prev_ptr = NULL;
-      enable_flush=0;
+//      enable_flush=0;
+//
+//    char* flush_str = getenv("enable_flush");
+//    char* bar_str = getenv("bar_flush");
+//
+//    if (flush_str && bar_str){
+//
+//        long bar_int = atol(bar_str);
+//        if (size*sizeof(float)>bar_int){
+//          enable_flush = atoi(flush_str);
+//        }
+//    }
 
-
-
-        if (size*4>=1073741824){
+//        if (size*4>=209715200){
 
 //        printf("evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
 
-          if (getenv("enable_flush")!=NULL){
+//          if (getenv("enable_flush")!=NULL){
 
 //            if (prev_ptr==(char*)evaluator.data()){
-            enable_flush=1;
+//            enable_flush=1;
 //            printf("flush evaluator pointer %p size:%ld\n",evaluator.data(),size*4);
 //            }else{
 //              printf("inequal pointer\n");
 //            }
-        }
+//        }
 //          else{
 //            printf("flush disabled\n");
 //        }
 
-      }
+//      }
 
 //      prev_ptr=(char*)evaluator.data();
+
+//    printf("flush is %d\n",enable_flush);
 
       device.parallelFor(size, evaluator.costPerCoeff(Vectorizable),
                          EvalRange::alignBlockSize,
