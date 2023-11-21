@@ -828,37 +828,105 @@ ploadquad<Packet16b>(const bool* from) {
   return  _mm_unpacklo_epi16(tmp, tmp);
 }
 
-static const uint64_t gran=256;
+
+static int style=-1;
+
+static int delay=-1;
+static __thread int delay_count=0;
 
 EIGEN_STRONG_INLINE void pflush(void*   to,size_t off){
-  uint64_t num = (uint64_t) (to) + off - gran;
-  if (__builtin_expect(!!(num % gran == 0), 0)){
 
-    for (uint64_t i=0;i<gran;i+=64)
-      asm volatile ("clwb (%0)"::"r"((volatile char *) (num+i)));
+  uint64_t num = (uint64_t) (to) + off - 64;
+  if (__builtin_expect(!!(num % 64 == 0), 0)){
+
+
+    if (__builtin_expect(!!(style<0), 0)){
+      char* style_str=getenv("flush_style");
+      style=style_str?atoi(style_str):0;
+      printf("pflush style is %d\n",style);
+    }
+
+    if (__builtin_expect(!!(delay<0), 0)){
+      char* delay_str=getenv("flush_delay");
+      delay=delay_str?atoi(delay_str):0;
+      printf("pflush delay is %d\n",delay);
+    }
+
+    if (delay_count<delay) {
+      delay_count++;
+      return;
+    }else if (delay_count){
+      delay_count=0;
+    }
+
+    uint64_t flush_size=64+delay*64;
+    num-=delay*64;
+
+    for (uint64_t i=0;i<flush_size;i+=64) {
+
+      switch(style)
+      {
+        case 0:
+          ((volatile char *) (num+i));
+//          asm volatile("nop");
+          break;
+        case 1:
+          asm volatile ("clwb (%0)"::"r"((volatile char *) (num+i)));
+          break;
+        case 2:
+          asm volatile("clflushopt %0" : "+m" (*(volatile char *) (num+i)));
+          break;
+        case 3:
+          asm volatile("clflush %0" : "+m" (*(volatile char *) (num+i)));
+          break;
+        default:
+          printf("wtf?\n");
+          break;
+      }
+    }
   }
+}
+
+EIGEN_STRONG_INLINE int palign(void* to) {
+  if (__builtin_expect(!!(style<0), 0)){
+    style=atoi(getenv("flush_style"));
+    if (style<0 || style>4) {printf("wtf?\n");}
+    printf("palign style is %d\n",style);
+  }
+
+  if (style!=4) return 0;
+
+  uint64_t num = (uint64_t)to;
+  return (num%16)==0;
 }
 
 template<> EIGEN_STRONG_INLINE void pstore<float>(float*   to, const Packet4f& from) {
 
-//  (void)from;
-//  for (int i=0;i<4;i++)to[i]+=1;
+  if (palign(to)) {_mm_stream_ps(to,from);return;}
+
   EIGEN_DEBUG_ALIGNED_STORE _mm_store_ps(to, from);
   pflush(to,4*(sizeof(float)));
 }
 template<> EIGEN_STRONG_INLINE void pstore<double>(double* to, const Packet2d& from) {
-//  (void)from;
-//  for (int i=0;i<2;i++)to[i]+=1;
+
+  if (palign(to)) {_mm_stream_pd(to,from);return;}
+
   EIGEN_DEBUG_ALIGNED_STORE _mm_store_pd(to, from);
   pflush(to,2*sizeof(double));
 }
 template<> EIGEN_STRONG_INLINE void pstore<int>(int*       to, const Packet4i& from) {
+
+  if (palign(to)) {_mm_stream_si128(reinterpret_cast<__m128i*>(to),from);return;}
+
 //  (void)from;
   //for (int i=0;i<4;i++)to[i]+=1;
   EIGEN_DEBUG_ALIGNED_STORE _mm_store_si128(reinterpret_cast<__m128i*>(to), from);
   pflush(to,4*sizeof(int));
 }
 template<> EIGEN_STRONG_INLINE void pstore<bool>(bool*     to, const Packet16b& from) {
+
+  if (palign(to)) {_mm_stream_si128(reinterpret_cast<__m128i*>(to), from);return;}
+
 //  int8_t* ptr =reinterpret_cast<int8_t*>(to);
 //  (void)from;
 //  for (int i=0;i<16;i++)ptr[i]+=1;
@@ -867,24 +935,36 @@ template<> EIGEN_STRONG_INLINE void pstore<bool>(bool*     to, const Packet16b& 
 }
 
 template<> EIGEN_STRONG_INLINE void pstoreu<double>(double* to, const Packet2d& from) {
+
+  if (palign(to)) {_mm_stream_pd(to,from);return;}
+
 //  (void)from;
 //  for (int i=0;i<2;i++)to[i]+=1;
   EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_pd(to, from);
   pflush(to,2*sizeof(double));
 }
 template<> EIGEN_STRONG_INLINE void pstoreu<float>(float*   to, const Packet4f& from) {
+
+  if (palign(to)) {_mm_stream_ps(to,from);return;}
+
 //  (void)from;
 // for (int i=0;i<4;i++)to[i]+=1;
   EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_ps(to, from);
   pflush(to,4*sizeof(float));
 }
 template<> EIGEN_STRONG_INLINE void pstoreu<int>(int*       to, const Packet4i& from) {
+
+  if (palign(to)) {_mm_stream_si128(reinterpret_cast<__m128i*>(to), from);return;}
+
 //  (void)from;
 //  for (int i=0;i<4;i++)to[i]+=1;
   EIGEN_DEBUG_UNALIGNED_STORE _mm_storeu_si128(reinterpret_cast<__m128i*>(to), from);
   pflush(to,4*sizeof(int));
 }
 template<> EIGEN_STRONG_INLINE void pstoreu<bool>(bool*     to, const Packet16b& from) {
+
+  if (palign(to)) {_mm_stream_si128(reinterpret_cast<__m128i*>(to), from);return;}
+
 //  int8_t* ptr =reinterpret_cast<int8_t*>(to);
 //  (void)from;
 //  for (int i=0;i<16;i++)to[i]+=1;
@@ -894,12 +974,18 @@ template<> EIGEN_STRONG_INLINE void pstoreu<bool>(bool*     to, const Packet16b&
 
 template<typename Scalar, typename Packet> EIGEN_STRONG_INLINE void pstorel(Scalar* to, const Packet& from);
 template<> EIGEN_STRONG_INLINE void pstorel(float*   to, const Packet4f& from) {
+
+  if (palign(to)) {_mm_stream_ps(to, from);return;}
+
 //  (void)from;
 //  for (int i=0;i<4;i++)to[i]+=1;
   EIGEN_DEBUG_UNALIGNED_STORE _mm_storel_pi(reinterpret_cast<__m64*>(to), from);
   pflush(to,4*sizeof(float));
 }
 template<> EIGEN_STRONG_INLINE void pstorel(double*  to, const Packet2d& from) {
+
+  if (palign(to)) {_mm_stream_pd(to, from);return;}
+
 //  (void)from;
 //  for (int i=0;i<2;i++)to[i]+=1;
   EIGEN_DEBUG_UNALIGNED_STORE _mm_storel_pd(to, from);
@@ -908,12 +994,18 @@ template<> EIGEN_STRONG_INLINE void pstorel(double*  to, const Packet2d& from) {
 
 template<typename Scalar, typename Packet> EIGEN_STRONG_INLINE void pstores(Scalar* to, const Packet& from);
 template<> EIGEN_STRONG_INLINE void pstores(float*   to, const Packet4f& from) {
+
+  if (palign(to)) {_mm_stream_ps(to,from);return;}
+
 //  (void)from;
 //  for (int i=0;i<4;i++)to[i]+=1;
   EIGEN_DEBUG_UNALIGNED_STORE _mm_store_ss(to, from);
   pflush(to,4*sizeof(float));
 }
 template<> EIGEN_STRONG_INLINE void pstores(double*  to, const Packet2d& from) {
+
+  if (palign(to)) {_mm_stream_pd(to,from);return;}
+
 //  (void)from;
 //  for (int i=0;i<2;i++)to[i]+=1;
   EIGEN_DEBUG_UNALIGNED_STORE _mm_store_sd(to, from);
